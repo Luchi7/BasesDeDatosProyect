@@ -134,8 +134,6 @@ def cerrar_reserva(id_reserva):
 
     return True
 
-
-
 #SANCIONES
 def listar_sanciones():
     sql = """
