@@ -59,7 +59,7 @@ def crear_reserva(id_sala, fecha, id_turno, creado_por):
     return run_query(sql, (id_sala, fecha, id_turno, creado_por))
 
 def agregar_alumno_a_reserva(id_reserva, ci):
-    sql = """INSERT INTO reserva_participante (id_reserva, ci_participante)
+    sql = """INSERT INTO reserva_alumno (id_reserva, ci_alumno)
             VALUES (%s, %s)"""
     return run_query(sql, (id_reserva, ci))
 
