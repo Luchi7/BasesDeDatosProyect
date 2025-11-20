@@ -8,7 +8,7 @@ cd obligatorio_ucu
 
 cd app
 
-python app.app
+python app.py
 
 cd ..
 

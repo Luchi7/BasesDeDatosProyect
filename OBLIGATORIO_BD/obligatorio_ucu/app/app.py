@@ -14,8 +14,6 @@ from funciones_abm import (
 from consultas_bi import ejecutar_bi
 
 app = Flask(__name__)
-print(">>> Flask obligatorio cargado (app.py correcto)")
-
 
 # HABILITAR CORS PARA /api/* DESDE EL FRONT (http://localhost:3001)
 CORS(app, resources={r"/api/*": {"origins": "*"}})

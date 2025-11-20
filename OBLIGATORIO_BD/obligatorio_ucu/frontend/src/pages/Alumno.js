@@ -16,6 +16,7 @@ export default function Alumno() {
   // Cargar salas desde backend
   //
     useEffect(() => {
+      
     fetch("http://localhost:5000/api/salas")
       .then(res => {
         console.log("RES /api/salas status:", res.status);
@@ -54,7 +55,12 @@ export default function Alumno() {
 
     const creado_por = prompt("Tu CI (creador de la reserva):");
     if (!creado_por) return;
-
+console.log("Datos enviados al backend:", {
+    id_sala: Number(id_sala),
+    fecha,
+    id_turno: Number(id_turno),
+    creado_por
+  });
     try {
       const res = await fetch("http://localhost:5000/api/reservas", {
         method: "POST",

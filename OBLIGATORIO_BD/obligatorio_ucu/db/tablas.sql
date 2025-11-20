@@ -1,5 +1,6 @@
--- MySQL 8.x
--- Tablas, restricciones y validaciones
+-- =============================================
+--  DDL.sql - Creación de Base y Tablas
+-- =============================================
 
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
@@ -8,7 +9,9 @@ DROP DATABASE IF EXISTS ucu_salas;
 CREATE DATABASE ucu_salas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE ucu_salas;
 
+-- =============================================
 -- TABLAS PRINCIPALES
+-- =============================================
 
 CREATE TABLE facultad (
   id_facultad INT AUTO_INCREMENT PRIMARY KEY,
@@ -64,13 +67,25 @@ CREATE TABLE sala (
   FOREIGN KEY (id_edificio) REFERENCES edificio(id_edificio)
 );
 
--- Turnos de 1h entre 08:00 y 23:00
+-- =============================================
+--  TABLA TURNO (MODELO CORRECTO)
+-- =============================================
+
 CREATE TABLE turno (
-  id_turno INT PRIMARY KEY,
+  id_turno INT AUTO_INCREMENT PRIMARY KEY,
+  id_sala INT NOT NULL,
+  fecha DATE NOT NULL,
   hora_inicio TIME NOT NULL,
   hora_fin TIME NOT NULL,
-  CHECK (TIMESTAMPDIFF(MINUTE, hora_inicio, hora_fin) = 60)
-);
+  disponible TINYINT DEFAULT 1,
+  CHECK (TIMESTAMPDIFF(MINUTE, hora_inicio, hora_fin) = 60),
+  FOREIGN KEY (id_sala) REFERENCES sala(id_sala)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- TABLA RESERVA
+-- =============================================
 
 CREATE TABLE reserva (
   id_reserva INT AUTO_INCREMENT PRIMARY KEY,
@@ -78,13 +93,17 @@ CREATE TABLE reserva (
   fecha DATE NOT NULL,
   id_turno INT NOT NULL,
   estado ENUM('activa','cancelada','sin_asistencia','finalizada') NOT NULL DEFAULT 'activa',
-  creado_por VARCHAR(20) NOT NULL, -- ci del creador
+  creado_por VARCHAR(20) NOT NULL,
   creado_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uniq_slot (id_sala, fecha, id_turno),
   FOREIGN KEY (id_sala) REFERENCES sala(id_sala),
   FOREIGN KEY (id_turno) REFERENCES turno(id_turno),
   FOREIGN KEY (creado_por) REFERENCES alumno(ci)
 );
+
+-- =============================================
+-- TABLA RESERVA_ALUMNO
+-- =============================================
 
 CREATE TABLE reserva_alumno (
   id_reserva INT NOT NULL,
@@ -96,6 +115,10 @@ CREATE TABLE reserva_alumno (
   FOREIGN KEY (id_reserva) REFERENCES reserva(id_reserva) ON DELETE CASCADE,
   FOREIGN KEY (ci_alumno) REFERENCES alumno(ci)
 );
+
+-- =============================================
+-- TABLA SANCIONES
+-- =============================================
 
 CREATE TABLE sancion_alumno (
   id_sancion INT AUTO_INCREMENT PRIMARY KEY,
@@ -109,7 +132,10 @@ CREATE TABLE sancion_alumno (
   CHECK (fecha_fin > fecha_inicio)
 );
 
--- Indices
+-- =============================================
+-- ÍNDICES
+-- =============================================
+
 CREATE INDEX idx_reserva_fecha ON reserva(fecha);
 CREATE INDEX idx_reserva_estado ON reserva(estado);
 CREATE INDEX idx_rp_ci ON reserva_alumno(ci_alumno);
